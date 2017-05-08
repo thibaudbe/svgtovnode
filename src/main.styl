@@ -1,0 +1,68 @@
+* { box-sizing: border-box; }
+
+body {
+  font-size: 14px;
+}
+
+textarea {
+  display: block;
+  padding: 0 20px 20px;
+  width: 100%;
+  font-size: 14px;
+  border: none;
+  margin-top: 60px;
+  height: calc(100% - 60px);
+}
+
+button {
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+}
+
+.field-group {
+  position: relative;
+  overflow: hidden;
+}
+
+label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  height: 60px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.field-group.input { height: calc(40vh - 30px) }
+.field-group.output { height: calc(60vh - 30px) }
+
+#convertBtn {
+  background-color: #333;
+  color: #FFFFFF;
+  height: 60px;
+  padding: 20px;
+  width: 100%;
+}
+
+#sampleBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 15px;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: all 240ms;
+
+  &:not(:hover) {
+    opacity: .5
+  }
+}

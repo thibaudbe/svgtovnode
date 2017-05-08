@@ -1,0 +1,39 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>         <html class="lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>         <html class="lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>SVG to VNode</title>
+  <meta name="description" content="Convert SVG element to Snabbdom virtual node" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="dist/css/reset.css?v=1" />
+  <link rel="stylesheet" href="dist/css/demo.css?v=1" />
+  <link rel="stylesheet" href="dist/css/main.css?v=1" />
+
+</head>
+<body>
+  
+  <div class="field-group input">
+    <label for="input">SVG</label>
+    <textarea id="input" placeholder="Copy SVG here" cols="30" rows="10"></textarea>
+  </div>
+  
+  <button id="convertBtn">Convert SVG to VNode</button>
+  
+  <div class="field-group output">
+    <label for="output">Result</label>
+    <textarea id="output" placeholder="Result append here" cols="30" rows="10"></textarea>
+  </div>
+
+  <button id="sampleBtn">Sample</button>
+
+  <script type="text/javascript" src="dist/js/main.js?v=100"></script>
+
+</body>
+</html>

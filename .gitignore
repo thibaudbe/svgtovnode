@@ -1,0 +1,7 @@
+node_modules
+.DS_STORE
+*.log
+*.map
+*.sublime-project
+*.sublime-workspace
+yarn.lock
