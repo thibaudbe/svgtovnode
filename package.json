@@ -39,5 +39,9 @@
     "uglify-js": "3.0.1",
     "uglifyify": "3.0.4",
     "watchify": "3.9.0"
+  },
+  "dependencies": {
+    "js-beautify": "1.7.4",
+    "xml-js": "^1.5.1"
   }
 }

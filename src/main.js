@@ -1,94 +1,70 @@
+const jsBeautify = require('js-beautify')
+const convert    = require('xml-js')
+
 const convertBtn = document.querySelector('#convertBtn')
-const sampleBtn = document.querySelector('#sampleBtn')
+const sampleBtn  = document.querySelector('#sampleBtn')
 const output = document.querySelector('#output')
-const input = document.querySelector('#input')
+const input  = document.querySelector('#input')
 
-
-// Init convertion
 convertBtn.addEventListener('click', convertToSVG)
 sampleBtn.addEventListener('click', copySample)
 
 
-// Settings
-let VNodeList = []
-let indentLevel = 1
-const indentSpace = '  '
-const closeLine = '\n'
-const lastChilds = []
-
-
 function convertToSVG() {
-  // Clear list
-  indentLevel = 1
-  VNodeList = []
-
-  // Disable button if input is empty
   if (input.value === '') return
-  
-  // Vdom builder
-  const vdom = document.createElement('div')
-  vdom.innerHTML = input.value
-  const svg = vdom.querySelector('svg')
-  toArray(svg.childNodes).forEach(convertChild)
 
-  // Output render
-  output.innerHTML = `h('svg',${getAttributes(svg)} [${VNodeList.join('')}\n])`
+  const xmlDoc = convert.xml2json(input.value, {
+    ignoreDeclaration: true,
+    ignoreInstruction: true,
+    ignoreComment: true,
+    ignoreDoctype: true,
+    ignoreCdata: true,
+    nativeType: true,
+    ignoreText: true,
+    compact: false,
+    spaces: 2
+  })
+
+  output.innerHTML = json2h(JSON.parse(xmlDoc).elements[0])
 }
 
+function attr2h(json) {
+  const attrs = json.attributes
 
-function convertChild(elt) {
-  const beginLine  = `${closeLine}${indentSpace.repeat(indentLevel)}`
-  const groupOpen  = `${beginLine}h('g',${getAttributes(elt)} [` 
-  const groupClose = `${closeLine}${indentSpace.repeat(indentLevel -1)}]),`
-
-  const allowedTags = [ 'g', 'path', 'polygon', 'rect', 'polyline', 'circle' ]
-  const isAllowed = allowedTags.find(t => t === elt.nodeName)
-
-  if (isAllowed) {
-    if (elt.lastChild) {
-      lastChilds.push(elt.lastChild)
-    }
-    if (elt.nodeName === 'g') {
-      VNodeList.push(groupOpen)
-      indentLevel++
-      return toArray(elt.childNodes).forEach(convertChild)
-    } else {
-      VNodeList.push(getVNode(elt))
-    }
-  } else {
-    const isLastChild = lastChilds.find(l => l === elt)
-    if (isLastChild) {
-      VNodeList.push(groupClose)
-      indentLevel--
-    }
+  if (!attrs) {
+    return undefined
   }
+
+  const cleanAttrs = JSON.stringify(objFilter(attrs, unallowedAttributes)).replace(/"/g, `'`)
+  return ` { attrs: ${jsBeautify.js_beautify(cleanAttrs)} }`
 }
 
-function getVNode(elem) {
-  const beginLine = `${closeLine}${indentSpace.repeat(indentLevel)}`
-  return `${beginLine}h('${elem.nodeName}',${getAttributes(elem)})`
-}
 
-function getAttributes(elt) {
-  const result = []
-  const attrs = elt.attributes
-  const allowedKeys = [
-    'viewBox', 'fill', 'width', 'height',
-    'rx', 'x', 'y', 'points', 'd',
-    'stroke', 'stroke-width', 'fill-rule'
-  ]
+function json2h(json) {
+  if (json.name === 'title') {
+    return
+  }
 
-  for (var key in attrs) {
-    const isAttr = attrs[key].nodeValue
-    if (typeof attrs[key] != 'function' && isAttr) {
-      const isAllowed = allowedKeys.find(k => k === attrs[key].nodeName)
-      if (isAllowed) {
-        result.push(`'${attrs[key].nodeName}': '${attrs[key].nodeValue}'`)
+  const childrenTest = json.elements.reduce((acc, child) => {
+    if (!child.elements) {
+      const childWithoutChildren = `h('${child.name}',${attr2h(child)})`
+
+      if (!unallowedTags.includes(child.name)) {
+        acc.push(childWithoutChildren)
+      }
+    } else {
+      const ch = json2h(child)
+      if (ch !== '') {
+        acc.push(ch)
       }
     }
-  }
-  const hasAttrs = result.length !== 0
-  return hasAttrs ? ` { attrs: { ${result.join(', ')} } }, ` : ''
+
+    return acc
+  }, []).join(',\n')
+
+  const vSvg = `h('${json.name}',${attr2h(json) ? attr2h(json)+',' : ''} [\n${childrenTest}\n])`
+
+  return jsBeautify.js_beautify(vSvg)
 }
 
 
@@ -116,7 +92,15 @@ function copySample() {
 }
 
 
-// Utils
-function toArray(arrayLike) {
-  return [].slice.call(arrayLike)
-}
+// Utils 
+const unallowedTags = [ 'title', 'desc', 'defs' ]
+const unallowedAttributes = [ 'id', 'version', 'xmlns:xlink', 'xmlns' ]
+
+const objFilter = (obj, unallowedKeys) =>
+  Object.keys(obj)
+    .filter(key => !unallowedKeys.includes(key))
+    .reduce((_obj, key) => {
+      _obj[key] = obj[key]
+      return _obj
+    }, {})
+

@@ -3,7 +3,7 @@
 
 # TEAM
 
-    Thibaud B. -- Developper / Designer -- @thibaudbe
+    Thibaud B. -- Software Architect -- @thibaudbe
 
 # THANKS
 
@@ -13,4 +13,3 @@
 
     HTML5, CSS3
     Javascript, Modernizr
-    
